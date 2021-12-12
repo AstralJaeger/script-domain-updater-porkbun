@@ -51,6 +51,11 @@ jobs:
           filename: release-${{ matrix.os }}-py${{ matrix.python-version }}
           path: 'dist/main/'
 
+      - name: Show content
+        run: |
+           ls -la
+           ls -la dist/
+
       # Add package to archive so we can inspect it
       - name: Archive artifact
         uses: actions/upload-artifact@v2
