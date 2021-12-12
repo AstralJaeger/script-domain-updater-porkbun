@@ -33,7 +33,7 @@ jobs:
         run: python -c "import sys; print(sys.version)"
       
       - name: Install dependencies
-        run: pip instal -r requirements.txt
+        run: pip install -r requirements.txt
         
       - name: Build application
         run: pyinstaller main.py
