@@ -28,41 +28,52 @@ jobs:
         with: 
           python-version: ${{ matrix.python-version }}
           architecture: 'x64'
-          
+
+      # Display the version for the sake of it
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
-      
+
+      # Install all necessary requirements from requirements.txt
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
+
+      # Build the application with pyinstaller (results go in dist/main/)
       - name: Build application
         run: pyinstaller main.py
-      
+
+      # Create a Zip file from the installer package
       - name: Create zip
         uses: thedoctor0/zip-release@master
         with: 
           type: 'zip'
           filename: release-${{ matrix.os }}-py${{ matrix.python-version }}
           path: 'dist/main/'
-          
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with: 
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Compilation of new features
-          prerelease: false
-                    
+
+      # Add package to archive so we can inspect it
       - name: Archive artifact
         uses: actions/upload-artifact@v2
         with: 
           name: release-${{ matrix.os }}-py${{ matrix.python-version }}
           path: dist/main/release-${{ matrix.os }}-py${{ matrix.python-version }}.zip
-          
+
+      # Get current date and time
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%-dT%H:%M')"
+
+      # Create a release to add the files to
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.date.outputs.date }}
+          release_name: Release ${{ steps.date.outputs.date }}
+          body: |
+            Compilation of new features
+          prerelease: false
+
       - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
