@@ -15,7 +15,7 @@ jobs:
     strategy: 
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ['3.8', '3.10']
         
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -52,7 +52,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with: 
           tag_name: ${{ github.ref }}
-          release_name: Release $ {{ github.ref }}
+          release_name: Release ${{ github.ref }}
           body: |
             Compilation of new features
           prerelease: false
