@@ -58,7 +58,7 @@ jobs:
           prerelease: false
                     
       - name: Archive artifact
-        uses: action/upload-artifact@v2
+        uses: actions/upload-artifact@v2
         with: 
           name: release-${{ matrix.os }}-{{ matrix.python-version }}
           path: release-${{ matrix.os }}-{{ matrix.python-version }}.zip
