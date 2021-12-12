@@ -42,7 +42,7 @@ jobs:
         uses: thedoctor0/zip-release@master
         with: 
           type: 'zip'
-          filename: release-${{ matrix.os }}-{{ matrix.python-version }}
+          filename: release-${{ matrix.os }}-${{ matrix.python-version }}
           path: 'dist/main/'
           
       - name: Create release
@@ -60,8 +60,8 @@ jobs:
       - name: Archive artifact
         uses: actions/upload-artifact@v2
         with: 
-          name: release-${{ matrix.os }}-{{ matrix.python-version }}
-          path: release-${{ matrix.os }}-{{ matrix.python-version }}.zip
+          name: release-${{ matrix.os }}-${{ matrix.python-version }}
+          path: release-${{ matrix.os }}-${{ matrix.python-version }}.zip
           
       - name: Upload release asset
         uses: actions/upload-release-asset@v1
@@ -69,8 +69,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: release-${{ matrix.os }}-{{ matrix.python-version }}.zip
-          asset_name: release-${{ matrix.os }}-{{ matrix.python-version }}.zip
+          asset_path: release-${{ matrix.os }}-${{ matrix.python-version }}.zip
+          asset_name: release-${{ matrix.os }}-${{ matrix.python-version }}.zip
           asset_content_type: application/zip
           
       - name: Publish release
