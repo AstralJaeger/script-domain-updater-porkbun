@@ -16,7 +16,7 @@ jobs:
     strategy: 
       matrix:
          os: [ ubuntu-18.04, ubuntu-20.04, macos-11, windows-2022 ]
-         python-version: ['3.6', '3.8', '3.10']
+         python-version: ['3.9']
         
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -40,7 +40,7 @@ jobs:
 
       # Build the application with pyinstaller (results go in dist/main/)
       - name: Build application
-        run: pyinstaller main.py
+        run: pyinstaller main.py -F
 
       # Create a Zip file from the installer package
       - name: Create zip
@@ -48,14 +48,14 @@ jobs:
         with: 
           type: 'zip'
           filename: release-${{ matrix.os }}-py${{ matrix.python-version }}.zip
-          path: 'dist/main/'
+          path: 'dist/'
 
       # Add package to archive so we can inspect it
       - name: Archive artifact
         uses: actions/upload-artifact@v2
         with: 
           name: release-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: dist/main/
+          path: .
 
       # Publish as release
       - name: Publish release
