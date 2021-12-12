@@ -48,13 +48,8 @@ jobs:
         uses: thedoctor0/zip-release@master
         with: 
           type: 'zip'
-          filename: release-${{ matrix.os }}-py${{ matrix.python-version }}
+          filename: release-${{ matrix.os }}-py${{ matrix.python-version }}.zip
           path: 'dist/main/'
-
-      - name: Show content
-        run: |
-           ls -la
-           ls -la dist/
 
       # Add package to archive so we can inspect it
       - name: Archive artifact
