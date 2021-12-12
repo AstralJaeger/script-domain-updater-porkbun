@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with: 
           name: release-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: dist/main/release-${{ matrix.os }}-py${{ matrix.python-version }}.zip
+          path: dist/release-${{ matrix.os }}-py${{ matrix.python-version }}.zip
 
       # Get current date and time
       - name: Get current date
@@ -80,7 +80,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/main/release-${{ matrix.os }}-py${{ matrix.python-version }}.zip
+          asset_path: dist/release-${{ matrix.os }}-py${{ matrix.python-version }}.zip
           asset_name: release-${{ matrix.os }}-${{ matrix.python-version }}.zip
           asset_content_type: application/zip
           
