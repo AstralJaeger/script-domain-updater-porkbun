@@ -3,7 +3,8 @@ name: build
 # Run Workflow manually or on push to master
 on:
   push:
-    branches: [ master ]
+    tags:
+      - 'rc-*'
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -14,8 +15,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy: 
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.8', '3.9', '3.10']
+         os: [ ubuntu-18.04, ubuntu-20.04, macos-11, windows-2022 ]
+         python-version: ['3.6', '3.8', '3.10']
         
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -28,54 +29,39 @@ jobs:
         with: 
           python-version: ${{ matrix.python-version }}
           architecture: 'x64'
-          
+
+      # Display the version for the sake of it
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
-      
+
+      # Install all necessary requirements from requirements.txt
       - name: Install dependencies
-        run: pip instal -r requirements.txt
-        
+        run: pip install -r requirements.txt
+
+      # Build the application with pyinstaller (results go in dist/main/)
       - name: Build application
         run: pyinstaller main.py
-      
+
+      # Create a Zip file from the installer package
       - name: Create zip
         uses: thedoctor0/zip-release@master
         with: 
           type: 'zip'
-          filename: release-${{ matrix.os }}-{{ matrix.python-version }}
+          filename: release-${{ matrix.os }}-py${{ matrix.python-version }}.zip
           path: 'dist/main/'
-          
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with: 
-          tag_name: ${{ github.ref }}
-          release_name: Release $ {{ github.ref }}
-          body: |
-            Compilation of new features
-          prerelease: false
-                    
+
+      # Add package to archive so we can inspect it
       - name: Archive artifact
         uses: actions/upload-artifact@v2
         with: 
-          name: release-${{ matrix.os }}-{{ matrix.python-version }}
-          path: release-${{ matrix.os }}-{{ matrix.python-version }}.zip
-          
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: release-${{ matrix.os }}-{{ matrix.python-version }}.zip
-          asset_name: release-${{ matrix.os }}-{{ matrix.python-version }}.zip
-          asset_content_type: application/zip
-          
+          name: release-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: dist/main/
+
+      # Publish as release
       - name: Publish release
-        uses: StuYarrow/publish-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with: 
-          id: ${{ steps.create_release.outputs.id }}
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: release-*.zip
+          artifactContentType: application/zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
